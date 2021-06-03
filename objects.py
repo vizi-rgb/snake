@@ -6,7 +6,7 @@ WIDTH = 420
 WIN = pg.display.set_mode((WIDTH,WIDTH))
 
 class Snake:
-	def __init__(self, h_x = 210, h_y = 210, l = 9, vel = 10, t_0 = 40):
+	def __init__(self, h_x = 210, h_y = 210, l = 1, vel = 10, t_0 = 40):
 		self.head_x = h_x
 		self.head_y = h_y
 		self.vel_x = 0
@@ -31,12 +31,13 @@ class Snake:
 				pg.draw.rect(WIN, (255,255,255), (pos[0], pos[1], 10, 10))
 
 	def draw_snake(self): 
+		# Draws the snake at the time_to_move frequency
 		if self.cooldown_counter == 0:
 			WIN.fill((0,255,0), (10,10, WIDTH - 20, WIDTH - 20))
 			self.update_pos()
 			self.draw_snake_head()
 			self.draw_snake_body()
-		self.cooldown_counter+= 1
+		self.cooldown_counter += 1
 
 	def update_vel(self, key_input):	   
 		if key_input[pg.K_w] and abs(self.vel_y) != self.vel_0:		
@@ -111,8 +112,17 @@ class Fruit:
 
 			self.collision_count += 1
 
-	def draw_fruit(self, visible_fruits):
-		WIN.blit(self.img,(self.x, self.y))	
+	def draw_fruit(self, visible_fruits, obj):
+		if self.fade_handler():
+			self.fade_counter += 1
+			if self.fade_counter == obj.time_to_move * 2:
+				self.fade_counter = 0
+				WIN.blit(self.img, (self.x, self.y))
+			
+		else:
+			WIN.blit(self.img,(self.x, self.y))	
+
+
 
 	def cooldown(self):
 		if self.time_to_spawn <= self.time_to_spawn_counter:
@@ -123,6 +133,7 @@ class Fruit:
 
 
 	def idle_handler(self,visible_fruits, hidden_fruits):
+
 		self.idle_time_counter += 1
 
 		if self.idle_time_counter >= self.idle_time:
@@ -130,10 +141,25 @@ class Fruit:
 			hidden_fruits.append(self)
 			self.time_to_spawn_counter += 1 
 
+	def fade_handler(self):
+		if self.idle_time_counter >= (0.75 * self.idle_time):
+			return True
+		else:
+			return False
+
 
 class Lemon(Fruit):
 	def __init__(self, obj, visible_fruits):
 		super().__init__(obj, "lemon.png", 1, 300, visible_fruits, 2000)
+
+class Apple(Fruit):
+	def __init__(self, obj, visible_fruits):
+		super().__init__(obj, "apple.png", 2, 400, visible_fruits, 1500)
+
+class Watermelon(Fruit):
+	def __init__(self, obj, visible_fruits):
+		super().__init__(obj, "watermelon.png", 3, 500, visible_fruits, 1000)
+
 
 
 
