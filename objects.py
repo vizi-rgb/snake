@@ -16,13 +16,14 @@ class Snake:
 		self.last_head_pos = []
 		self.time_to_move = t_0
 		self.cooldown_counter = 0
+		self.rect_to_fill = self.head_x, self.head_y
 
 	def draw_snake_head(self):
-		pg.draw.rect(WIN, (0,191,255) , (self.head_x,self.head_y, 10,10))
 		if (self.head_x, self.head_y) not in self.last_head_pos:
 			self.last_head_pos.append((self.head_x, self.head_y))
 
 		while len(self.last_head_pos) > self.level:
+			self.rect_to_fill = self.last_head_pos[0]
 			self.last_head_pos.pop(0)
 
 	def draw_snake_body(self):
@@ -33,9 +34,12 @@ class Snake:
 	def draw_snake(self): 
 		# Draws the snake at the time_to_move frequency
 		if self.cooldown_counter == 0:
-			WIN.fill((0,255,0), (10,10, WIDTH - 20, WIDTH - 20))
 			self.update_pos()
-			self.draw_snake_head()
+			self.draw_snake_head() 
+			# fills green the last rect of the snake
+			WIN.fill((0,255,0), (self.rect_to_fill[0],self.rect_to_fill[1], 10, 10))
+			# draws its head
+			pg.draw.rect(WIN, (0,191,255) , (self.head_x,self.head_y, 10,10))
 			self.draw_snake_body()
 		self.cooldown_counter += 1
 
@@ -100,7 +104,10 @@ class Fruit:
 	def on_collision(self, obj, visible_fruits, hidden_fruits):
 		if ((obj.head_x, obj.head_y) == (self.x, self.y) and
 			self.collision_count == 0):
+			# and self.collision_count == 0 as the snake is update x times a second and we only
+			# want to register one hit
 
+			# NO NEED TO ERASE THE OBJECT AS SNAKE WILL DRAW ITS HEAD OVER IT
 			obj.level += self.multiplier
 			obj.speed_handler()
 			visible_fruits.remove(self)
@@ -113,11 +120,17 @@ class Fruit:
 			self.collision_count += 1
 
 	def draw_fruit(self, visible_fruits, obj):
-		if self.fade_handler():
-			self.fade_counter += 1
-			if self.fade_counter == obj.time_to_move * 2:
-				self.fade_counter = 0
-				WIN.blit(self.img, (self.x, self.y))
+		if self.fade_handler(): 
+			self.fade_counter += 1 
+			if self.fade_counter > 10: 
+				WIN.blit(self.img, (self.x, self.y))	
+				if self.fade_counter == 20:
+					self.fade_counter = 0
+			else:
+				if (obj.head_x, obj.head_y) != (self.x, self.y):
+					WIN.fill((0,255,0), (self.x, self.y, 10, 10))
+				else:
+					WIN.blit(self.img, (self.x, self.y))
 			
 		else:
 			WIN.blit(self.img,(self.x, self.y))	
@@ -139,6 +152,8 @@ class Fruit:
 		if self.idle_time_counter >= self.idle_time:
 			visible_fruits.remove(self)
 			hidden_fruits.append(self)
+			# FILLS THE FRUIT RECT WITH THE BGs COLOUR
+			WIN.fill((0,255,0), (self.x, self.y, 10, 10))
 			self.time_to_spawn_counter += 1 
 
 	def fade_handler(self):
@@ -146,6 +161,11 @@ class Fruit:
 			return True
 		else:
 			return False
+
+	def remover(self):
+		#only for hidden fruits
+		if self.time_to_spawn_counter > 0:
+			WIN.fill((0,255,0), (self.x, self.y, 10, 10))
 
 
 class Lemon(Fruit):
