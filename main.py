@@ -1,5 +1,6 @@
 import pygame as pg
 import objects as s
+import menu
 
 pg.init()
 
@@ -15,7 +16,7 @@ def make_grid():
 	pg.draw.rect(WIN,(255,0,0), (0,0,WIDTH,WIDTH), 20)
 
 def border_touch(obj):
-	if obj.head_x <= 10 or obj.head_x >= 410 or obj.head_y <= 10 or obj.head_y >= 410:
+	if obj.head_x < 10 or obj.head_x > 410 or obj.head_y <= 10 or obj.head_y >= 410:
 		return False 
 	return True
 
@@ -98,11 +99,29 @@ def main():
 
 
 		pg.display.update()
+	pg.time.wait(1000)	
 
  # ~~~~~~ # ~~~~~~ # ~~~~~~ # ~~~~~~ # ~~~~~~ #	
 
+run = True
+while run: 
+	for event in pg.event.get():
+		if event.type == pg.QUIT:
+			run = False
+			pg.quit()
+		if event.type == pg.MOUSEBUTTONDOWN:
+			pos = pg.mouse.get_pos()
 
-WIN.fill((0,255,0))
-main()				
+			if menu.MainMenu.play_clicked(pos):
+				WIN.fill((0,255,0))
+				main()
+			elif menu.MainMenu.data_clicked(pos):
+				pass
+			elif menu.MainMenu.quit_clicked(pos):
+				run = False
+				pg.quit()
+
+	menu.MainMenu.draw_menu() 
+	pg.display.update()
 
 
