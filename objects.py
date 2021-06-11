@@ -149,7 +149,7 @@ class Fruit:
 
 		self.idle_time_counter += 1
 
-		if self.idle_time_counter >= self.idle_time:
+		if self.idle_time_counter >= self.idle_time and self in visible_fruits:
 			visible_fruits.remove(self)
 			hidden_fruits.append(self)
 			# FILLS THE FRUIT RECT WITH THE BGs COLOUR
