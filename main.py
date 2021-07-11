@@ -1,4 +1,5 @@
 import pygame as pg
+import pickle
 import objects as s
 import menu
 
@@ -16,13 +17,44 @@ def make_grid():
 	pg.draw.rect(WIN,(255,0,0), (0,0,WIDTH,WIDTH), 20)
 
 def border_touch(obj):
-	if obj.head_x < 10 or obj.head_x > 410 or obj.head_y <= 10 or obj.head_y >= 410:
+	if obj.head_x < 10 or obj.head_x >= 410 or obj.head_y < 10 or obj.head_y >= 410:
 		return False 
 	return True
 
+def save_data(score):
+	try:
+		with open('stats.dat', 'rb') as stats_read:
+			stats = [score]
+			while True:
+				try:
+					x = pickle.load(stats_read)
+					print(x)
+					if type(x) == list:
+						for cnt in x:
+							stats.append(cnt)
+					else:
+						stats.append(x)
 
+				except EOFError:
+					stats = sorted(list(set(stats)), reverse = True)
 
+					while len(stats) > 10:
+						stats.pop()
 
+					with open('stats.dat', 'wb') as stats_save:
+						pickle.dump(stats, stats_save)
+						stats_save.close()
+
+					stats_read.close()
+					print(stats)
+					break
+
+	except FileNotFoundError:
+		with open('stats.dat', 'wb') as stats_save:
+			pickle.dump(score, stats_save)
+			stats_save.close()	
+
+	
 
 def main():
 	# LEMON
@@ -99,6 +131,7 @@ def main():
 
 
 		pg.display.update()
+	save_data(snake.score)
 	pg.time.wait(1000)	
 
  # ~~~~~~ # ~~~~~~ # ~~~~~~ # ~~~~~~ # ~~~~~~ #	
@@ -116,7 +149,7 @@ while run:
 				WIN.fill((0,255,0))
 				main()
 			elif menu.MainMenu.data_clicked(pos):
-				pass
+				menu.Leaderboard.draw_board()	
 			elif menu.MainMenu.quit_clicked(pos):
 				run = False
 				pg.quit()

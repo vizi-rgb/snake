@@ -1,3 +1,4 @@
+import pickle
 import pygame as pg
 import os 
 pg.init()
@@ -79,6 +80,29 @@ class MainMenu:
 		and pos[1] >= y1 and pos[1] <= y2): 
 			return True
 		return False
+
+
+class Leaderboard:
+	MAIN_FONT = pg.font.SysFont("pixeboy", 12)	
+
+	@classmethod
+	def draw_board(cls):
+		# # #
+		try:
+			with open('stats.dat', 'rb') as stats_read:
+				stats = pickle.load(stats_read)
+		# # #
+
+		if stats.type == list:
+			for i in range(1,11):
+				print(f"{i}. {stats[i-1]} ")
+		else:
+			print(stats)
+
+
+
+
+
 
 
 

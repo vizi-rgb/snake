@@ -17,6 +17,7 @@ class Snake:
 		self.time_to_move = t_0
 		self.cooldown_counter = 0
 		self.rect_to_fill = self.head_x, self.head_y
+		self.score = 0
 
 	def draw_snake_head(self):
 		if (self.head_x, self.head_y) not in self.last_head_pos:
@@ -69,6 +70,10 @@ class Snake:
 		if self.time_to_move > 5:
 			self.time_to_move -= 1
 
+	def score_handler(self, obj):
+		self.score += int((obj.multiplier*100)/self.time_to_move)
+
+
 
 	def start(self):
 		if self.vel_x == 0 and self.vel_y == 0:
@@ -110,6 +115,7 @@ class Fruit:
 			# NO NEED TO ERASE THE OBJECT AS SNAKE WILL DRAW ITS HEAD OVER IT
 			obj.level += self.multiplier
 			obj.speed_handler()
+			obj.score_handler(self)
 			visible_fruits.remove(self)
 			hidden_fruits.append(self)
 			self.time_to_spawn_counter += 1 
