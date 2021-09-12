@@ -22,13 +22,13 @@ def border_touch(obj):
 	return True
 
 def save_data(score):
+	# SAVE THE SORTED DATA TO A BINARY FILE  
 	try:
 		with open('stats.dat', 'rb') as stats_read:
 			stats = [score]
 			while True:
 				try:
 					x = pickle.load(stats_read)
-					print(x)
 					if type(x) == list:
 						for cnt in x:
 							stats.append(cnt)
@@ -46,13 +46,14 @@ def save_data(score):
 						stats_save.close()
 
 					stats_read.close()
-					print(stats)
 					break
 
 	except FileNotFoundError:
 		with open('stats.dat', 'wb') as stats_save:
 			pickle.dump(score, stats_save)
 			stats_save.close()	
+
+
 
 	
 

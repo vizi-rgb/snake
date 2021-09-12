@@ -6,7 +6,7 @@ WIDTH = 420
 WIN = pg.display.set_mode((WIDTH,WIDTH))
 
 class Snake:
-	def __init__(self, h_x = 210, h_y = 210, l = 1, vel = 10, t_0 = 40):
+	def __init__(self, h_x = 210, h_y = 210, l = 1, vel = 10, t_0 = 30):
 		self.head_x = h_x
 		self.head_y = h_y
 		self.vel_x = 0
@@ -35,6 +35,8 @@ class Snake:
 	def draw_snake(self): 
 		# Draws the snake at the time_to_move frequency
 		if self.cooldown_counter == 0:
+			self.draw_score(str(self.score))
+			print(self.score)
 			self.update_pos()
 			self.draw_snake_head() 
 			# fills green the last rect of the snake
@@ -83,6 +85,19 @@ class Snake:
 	def game_over(self):
 		return (self.head_x, self.head_y) in self.last_head_pos[:-1]
 
+	@staticmethod
+	def draw_score(score):
+		FONT = pg.font.SysFont("Pixeboy", 50)
+		COLOR = (255, 255, 255)
+
+		text = FONT.render(score, 0, COLOR)
+		x = WIDTH/2 - text.get_width()/2
+		y = WIDTH/2 - text.get_height()/2
+		rect = text.get_rect().width, text.get_rect().height
+		WIN.fill((0,255,0), (x,y,rect[0], rect[1]))
+		WIN.blit(text, (x,y))
+
+
 
 class Fruit:
 	def __init__(self, obj, source, m, t, visible_fruits, t1):
@@ -109,7 +124,7 @@ class Fruit:
 	def on_collision(self, obj, visible_fruits, hidden_fruits):
 		if ((obj.head_x, obj.head_y) == (self.x, self.y) and
 			self.collision_count == 0):
-			# and self.collision_count == 0 as the snake is update x times a second and we only
+			# and self.collision_count == 0 as the snake position is updated x times a second and we only
 			# want to register one hit
 
 			# NO NEED TO ERASE THE OBJECT AS SNAKE WILL DRAW ITS HEAD OVER IT

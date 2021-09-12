@@ -53,6 +53,7 @@ class MainMenu:
 			return True, x1, x2, y1, y2
 		return False
 
+
 	@classmethod
 	def play_clicked(cls, pos): 
 		x1,x2,y1,y2 = 80, 340, 80, 207
@@ -83,23 +84,79 @@ class MainMenu:
 
 
 class Leaderboard:
-	MAIN_FONT = pg.font.SysFont("pixeboy", 12)	
+	MAIN_FONT = pg.font.SysFont("Pixeboy", 31)	
+	SECOND_FONT = pg.font.SysFont("Pixeboy", 41)
+	SECOND_FONT.bold = True
 
 	@classmethod
 	def draw_board(cls):
-		# # #
 		try:
 			with open('stats.dat', 'rb') as stats_read:
 				stats = pickle.load(stats_read)
-		# # #
 
-		if stats.type == list:
-			for i in range(1,11):
-				print(f"{i}. {stats[i-1]} ")
-		else:
-			print(stats)
+			# DRAWING LEADERBOARD
+
+			WIN.fill((134,19,159))
+			run = True
+			while run:
+				for event in pg.event.get():
+					if event.type == pg.QUIT:
+						run = False
+						pg.quit()
+					if event.type == pg.MOUSEBUTTONDOWN:
+						pos = pg.mouse.get_pos()
+						if cls.back_button_handler(pos):
+							run = False
 
 
+				if type(stats) == list:
+					for i in range(1,11):
+						if i-1 in range(0, len(stats)): 
+							element = cls.MAIN_FONT.render(f"{i}.  {stats[i-1]}", 0, (255,255,255))
+							WIN.blit(element, (10, 41*i - 31))
+						else:
+							element = cls.MAIN_FONT.render(f"{i}.  ---", 0, (255,255,255))
+							WIN.blit(element, (10, 41*i - 31))
+				else:
+					element = cls.MAIN_FONT.render(f"1.  {stats}", 0, (255,255,255))
+					WIN.blit(element, (10, 10))
+
+				pg.draw.rect(WIN, (255,255,255), (379, 379, 41, 41))
+				back = cls.SECOND_FONT.render("<", 0, (134,19,159))
+
+				x = int(379 + (41 - back.get_width())/2)
+				y = int(379 + (41 - back.get_height())/2)
+				WIN.blit(back, (x,y))
+
+				a = cls.on_backbutton()
+				if a != False:
+					width, height = (a[2] - a[1]), (a[4] - a[3])
+					tempSurface = pg.Surface((width, height))
+					tempSurface.set_alpha(100)
+					WIN.blit(tempSurface, (a[1], a[3]))
+					pg.draw.rect(WIN, (255,0,0), (a[1], a[3], width, height), 4)
+
+
+
+
+				pg.display.update()
+
+		except FileNotFoundError:
+			print("Nie znaleziono pliku")
+
+
+	@classmethod
+	def on_backbutton(cls):
+		x1,x2,y1,y2 = 379, 420, 379, 420
+		if (pg.mouse.get_pos()[0] >= x1 and pg.mouse.get_pos()[0] <= x2
+		and pg.mouse.get_pos()[1] >= y1 and pg.mouse.get_pos()[1] <= y2):
+			return True, x1, x2, y1, y2
+		return False
+
+	@classmethod
+	def back_button_handler(cls, pos):
+		if pos[0] >= 379 and pos[0] < 420 and pos[1] >= 379 and pos[1] < 420:
+			return True 
 
 
 
@@ -130,4 +187,4 @@ class Leaderboard:
 
 # 	MainMenu.draw_menu()
 
-# 	pg.display.update()
+	# pg.display.update()
