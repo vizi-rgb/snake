@@ -35,13 +35,12 @@ class Snake:
 	def draw_snake(self): 
 		# Draws the snake at the time_to_move frequency
 		if self.cooldown_counter == 0:
-			self.draw_score(str(self.score))
-			print(self.score)
 			self.update_pos()
 			self.draw_snake_head() 
 			# fills green the last rect of the snake
 			WIN.fill((0,255,0), (self.rect_to_fill[0],self.rect_to_fill[1], 10, 10))
 			# draws its head
+			self.draw_score(str(self.score))
 			pg.draw.rect(WIN, (0,191,255) , (self.head_x,self.head_y, 10,10))
 			self.draw_snake_body()
 		self.cooldown_counter += 1
